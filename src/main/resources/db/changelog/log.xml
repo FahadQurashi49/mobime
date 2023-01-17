@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet id="1" author="mfaq">
+        <createTable tableName="mobile_ad">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="brand" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="condition" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="price" type="double">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="city" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="area" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="mfaq">
+        <createTable tableName="user">
+            <column name="email" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="contact" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="mfaq">
+        <createTable tableName="ad_photo">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="url" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="mobile_ad_id" type="int">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="4" author="mfaq">
+        <addForeignKeyConstraint
+                baseTableName="mobile_ad"
+                baseColumnNames="user_id"
+                constraintName="fk_user_id"
+                referencedTableName="user"
+                referencedColumnNames="email" />
+        <addForeignKeyConstraint
+                baseTableName="ad_photo"
+                baseColumnNames="mobile_ad_id"
+                constraintName="fk_mobile_ad_id"
+                referencedTableName="mobile_ad"
+                referencedColumnNames="id" />
+    </changeSet>
+</databaseChangeLog>
