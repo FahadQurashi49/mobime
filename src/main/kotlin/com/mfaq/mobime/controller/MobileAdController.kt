@@ -4,21 +4,27 @@ import com.mfaq.mobime.dto.Message
 import com.mfaq.mobime.dto.MobileAdDto
 import com.mfaq.mobime.service.JwtService
 import com.mfaq.mobime.service.MobileAdService
+import com.mfaq.mobime.service.S3Service
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.core.io.ResourceLoader
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
+import java.util.*
 
 @RestController
 @RequestMapping("/mobime/mobilead")
-class MobileAdController(private val mobileAdService: MobileAdService, private val jwtService: JwtService) {
-//    @GetMapping
-//    fun getAllMobileAds() = mobileAdService.getAllMobileAd()
+class MobileAdController(private val mobileAdService: MobileAdService,
+                         private val s3Service: S3Service,
+                         private val jwtService: JwtService) {
 
     @GetMapping
     fun getAllMobileAds(
@@ -28,13 +34,15 @@ class MobileAdController(private val mobileAdService: MobileAdService, private v
 
     @PostMapping
     fun createMobileAd(@CookieValue("jwt") jwtCookie: String?,
-                       @RequestBody mobileAd: MobileAdDto): ResponseEntity<Any> {
+                        @ModelAttribute mobileAdDto: MobileAdDto,
+                        request: HttpServletRequest
+                       ): ResponseEntity<Any> {
         try {
             if (jwtCookie == null) {
                 return ResponseEntity.status(401).body(Message("unauthenticated"))
             }
-            if (jwtService.isValid(jwtCookie, mobileAd.userId)) {
-                return ResponseEntity.ok(mobileAdService.createMobileAd(mobileAd))
+            if (jwtService.isValid(jwtCookie, mobileAdDto.userId)) {
+                return ResponseEntity.ok(mobileAdService.createMobileAd(mobileAdDto))
             }
         } catch (e: Exception) {
             return ResponseEntity.status(401).body(Message("unauthenticated"))
@@ -44,4 +52,15 @@ class MobileAdController(private val mobileAdService: MobileAdService, private v
 
     @RequestMapping(value=["/{id}"])
     fun getMobileAd(@PathVariable id: Long) = mobileAdService.getMobileAdById(id)
+
+        /*  algo for saving file locally
+        val resourceFolder = resourceLoader.getResource("classpath:static/images/")
+        mobileAdDto.photo.forEach {
+            val filePath = resourceFolder.file.absolutePath + "/" + it.originalFilename
+            val file = File(filePath)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            it.transferTo(file)
+        }*/
 }

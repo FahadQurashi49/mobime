@@ -21,12 +21,51 @@ data class MobileAd(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     @JsonIgnore
-    var user: User?
+    var user: User?,
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "mobileAd")
+    @JsonIgnore
+    var photos: Array<AdPhoto>?
 ) {
     constructor(mobileAdDto: MobileAdDto) :
             this(null, mobileAdDto.title, mobileAdDto.brand, mobileAdDto.state,
                 mobileAdDto.description,  mobileAdDto.price, null,
-                mobileAdDto.city,  mobileAdDto.area, null) {
+                mobileAdDto.city,  mobileAdDto.area, null, null) {
 
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as MobileAd
+
+        if (id != other.id) return false
+        if (title != other.title) return false
+        if (brand != other.brand) return false
+        if (state != other.state) return false
+        if (description != other.description) return false
+        if (price != other.price) return false
+        if (createdAt != other.createdAt) return false
+        if (city != other.city) return false
+        if (area != other.area) return false
+        if (user != other.user) return false
+        if (!photos.contentEquals(other.photos)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + title.hashCode()
+        result = 31 * result + brand.hashCode()
+        result = 31 * result + state.hashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + price.hashCode()
+        result = 31 * result + (createdAt?.hashCode() ?: 0)
+        result = 31 * result + city.hashCode()
+        result = 31 * result + area.hashCode()
+        result = 31 * result + (user?.hashCode() ?: 0)
+        result = 31 * result + photos.contentHashCode()
+        return result
     }
 }
