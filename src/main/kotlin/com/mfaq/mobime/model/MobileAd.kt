@@ -23,8 +23,7 @@ data class MobileAd(
     @JsonIgnore
     var user: User?,
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mobileAd")
-    @JsonIgnore
-    var photos: Array<AdPhoto>?
+    var photos: List<AdPhoto>? = null
 ) {
     constructor(mobileAdDto: MobileAdDto) :
             this(null, mobileAdDto.title, mobileAdDto.brand, mobileAdDto.state,
@@ -49,7 +48,7 @@ data class MobileAd(
         if (city != other.city) return false
         if (area != other.area) return false
         if (user != other.user) return false
-        if (!photos.contentEquals(other.photos)) return false
+        if (photos != other.photos) return false
 
         return true
     }
@@ -65,7 +64,7 @@ data class MobileAd(
         result = 31 * result + city.hashCode()
         result = 31 * result + area.hashCode()
         result = 31 * result + (user?.hashCode() ?: 0)
-        result = 31 * result + photos.contentHashCode()
+        result = 31 * result + (photos?.hashCode() ?: 0)
         return result
     }
 }

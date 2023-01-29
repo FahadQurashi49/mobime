@@ -11,5 +11,5 @@ data class AdPhoto(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="mobile_ad_id")
     @JsonIgnore
-    var mobileAd: MobileAd?
+    var mobileAd: MobileAd? = null
 )
