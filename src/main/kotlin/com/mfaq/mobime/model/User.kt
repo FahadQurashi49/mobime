@@ -12,5 +12,6 @@ data class User(
     var name: String?,
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var password: String,
+    @JsonIgnore
     var contact: String?
 )

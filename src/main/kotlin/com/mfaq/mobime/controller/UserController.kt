@@ -1,20 +1,18 @@
 package com.mfaq.mobime.controller
 
 import com.mfaq.mobime.dto.Message
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import com.mfaq.mobime.dto.UserDto
 import com.mfaq.mobime.model.User
+import com.mfaq.mobime.service.JwtService
 import com.mfaq.mobime.service.UserService
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/mobime")
-class UserController(private val userService: UserService) {
+class UserController(private val userService: UserService, private val jwtService: JwtService) {
 
     @PostMapping("/signup")
     fun signup(@RequestBody user: User, response: HttpServletResponse): ResponseEntity<Message> {
@@ -40,6 +38,22 @@ class UserController(private val userService: UserService) {
         response.addCookie(cookie)
 
         return ResponseEntity.ok(Message("success"))
+    }
+
+    @PostMapping("contact")
+    fun getUserContact(@CookieValue("jwt") jwtCookie: String?,
+        @RequestBody userDto: UserDto) : ResponseEntity<Any> {
+        return try {
+            if (jwtCookie != null && jwtService.isValid(jwtCookie, userDto.email)) {
+                val user = userService.getUserById(userDto.emailUserToFetch)
+                userDto.contact = user.contact
+                ResponseEntity.ok(userDto)
+            } else {
+                ResponseEntity.status(401).body(Message("Unauthenticated"))
+            }
+        } catch (e: Exception) {
+            ResponseEntity.internalServerError().body(Message(e.stackTraceToString()))
+        }
     }
 
     private fun addJwtCookie(jwt: String, response: HttpServletResponse) {

@@ -24,6 +24,8 @@ class UserService(private val userRepo: UserRepository, private val jwtService: 
         return null
     }
 
+    fun getUserById(email: String): User = userRepo.findById(email).get()
+
 
 
 

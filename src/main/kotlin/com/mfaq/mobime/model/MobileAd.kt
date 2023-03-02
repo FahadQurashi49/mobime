@@ -20,7 +20,6 @@ data class MobileAd(
     var area: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
-    @JsonIgnore
     var user: User?,
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mobileAd")
     var photos: List<AdPhoto>? = null
